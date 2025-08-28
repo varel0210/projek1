@@ -13,43 +13,25 @@
             padding: 0;
         }
 
-        .sidebar {
-            min-height: 100vh;
+        .navbar-custom {
             background-color: #fff;
-            border-right: 1px solid #dee2e6;
-            padding: 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 250px;
-            z-index: 100;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .navbar-custom .nav-link {
+            color: #2f80ed;
+            font-weight: 500;
+            margin-right: 15px;
+        }
+
+        .navbar-custom .nav-link.active {
+            font-weight: bold;
+            color: #2f80ed;
+            border-bottom: 2px solid #2f80ed;
         }
 
         .main-content {
-            margin-left: 250px;
-            padding: 30px 20px 50px 20px;
-        }
-
-        .sidebar h5 {
-            color: #2f80ed;
-            font-weight: bold;
-        }
-
-        .sidebar a {
-            display: block;
-            padding: 10px 15px;
-            color: #2f80ed;
-            font-weight: 500;
-            text-decoration: none;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background-color: #2f80ed;
-            color: #fff;
+            padding: 80px 20px 50px 20px; /* top padding untuk navbar */
         }
 
         .card {
@@ -90,160 +72,128 @@
             height: 150px;
             object-fit: cover;
         }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-
-            .mobile-nav {
-                display: flex;
-                justify-content: space-around;
-                background-color: #fff;
-                border-top: 1px solid #dee2e6;
-                padding: 10px 0;
-                position: fixed;
-                bottom: 0;
-                width: 100%;
-                z-index: 1000;
-            }
-
-            .mobile-nav a {
-                color: #2f80ed;
-                text-decoration: none;
-                font-weight: 500;
-                font-size: 14px;
-            }
-
-            .mobile-nav a.active {
-                font-weight: bold;
-                text-decoration: underline;
-            }
-
-            .card {
-                margin-bottom: 80px;
-            }
-        }
     </style>
 </head>
 <body>
-<div class="container-fluid">
-    <div class="row">
-        <!-- Sidebar -->
-        <div class="col-md-3 sidebar d-none d-md-block">
-            <h5 class="mb-4">Menu</h5>
-            <hr>
-            <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
-            <a href="{{ route('kategori') }}" class="{{ request()->routeIs('kategori') ? 'active' : '' }}">Kategori</a>
-            <br>
-            <a href="{{ route('logout') }}" style="color: red;" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom fixed-top">
+    <div class="container-fluid">
+        <a class="navbar-brand text-primary fw-bold" href="{{ route('dashboard') }}">User</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('kategori') ? 'active' : '' }}" href="{{ route('kategori') }}">Kategori</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('konten.index') ? 'active' : '' }}" href="{{ route('konten.index') }}">Data Konten</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" href="{{ route('logout') }}" 
+                       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                        Logout
+                    </a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
+                </li>
+            </ul>
         </div>
+    </div>
+</nav>
 
-        <!-- Main Content -->
-        <div class="col-md-9 main-content">
-            <div class="card shadow p-4">
-                @if(session('success'))
-                    <div class="alert alert-success">{{ session('success') }}</div>
-                @endif
+<!-- Main Content -->
+<div class="main-content">
+    <div class="card shadow p-4">
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
 
-                <div class="row align-items-center">
-                    <div class="col-md-4 text-center mb-3 mb-md-0">
-                        <img 
-                            src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : 'https://via.placeholder.com/150' }}" 
-                            alt="Foto Profil"
-                            class="profile-img">
-                    </div>
+        <div class="row align-items-center">
+            <div class="col-md-4 text-center mb-3 mb-md-0">
+                <img 
+                    src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : 'https://via.placeholder.com/150' }}" 
+                    alt="Foto Profil"
+                    class="profile-img">
+            </div>
 
-                    <div class="col-md-8">
-                        <h3 class="mb-3">Selamat Datang, {{ Auth::user()->name }}!</h3>
-                        <p class="mb-1"><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                        <p class="mb-3"><strong>Login pada:</strong> {{ now()->format('d M Y') }}</p>
-                        <p>Anda telah berhasil login. Ini adalah halaman dashboard sederhana.</p>
+            <div class="col-md-8">
+                <h3 class="mb-3">Selamat Datang, {{ Auth::user()->name }}!</h3>
+                <p class="mb-1"><strong>Email:</strong> {{ Auth::user()->email }}</p>
+                <p class="mb-3"><strong>Login pada:</strong> {{ now()->format('d M Y') }}</p>
+                <p>Anda telah berhasil login. Ini adalah halaman dashboard sederhana.</p>
 
-                        <!-- Tombol -->
-                        <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#editModal">Edit Profil</button>
-                        <button type="button" class="btn btn-info text-white mt-3 ms-2" data-bs-toggle="modal" data-bs-target="#detailModal">Detail Profil</button>
-
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">@csrf</form>
-                    </div>
-                </div>
+                <!-- Tombol -->
+                <button class="btn btn-outline-primary mt-3" data-bs-toggle="modal" data-bs-target="#editModal">Edit Profil</button>
+                <button type="button" class="btn btn-info text-white mt-3 ms-2" data-bs-toggle="modal" data-bs-target="#detailModal">Detail Profil</button>
             </div>
         </div>
     </div>
-</div>
-
-<!-- Mobile Navigation -->
-<div class="mobile-nav d-md-none">
-    <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
-    <a href="{{ route('kategori') }}" class="{{ request()->routeIs('kategori') ? 'active' : '' }}">Kategori</a>
-    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
 </div>
 
 <!-- Modal Edit Profil -->
 <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="modal-content">
-            @csrf
-            @method('PUT')
-
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Profil</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-            </div>
-
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label class="form-label">Nama</label>
-                    <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" value="{{ Auth::user()->email }}" required>
-                </div>
-
-                <div class="mb-3">
-                    <label class="form-label">Foto</label>
-                    <input type="file" name="photo" class="form-control" accept="image/*">
-                    <small class="text-muted">Kosongkan jika tidak ingin mengganti foto.</small>
-                </div>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan</button>
-            </div>
-        </form>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Edit Profil</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Nama</label>
+            <input type="text" name="name" class="form-control" value="{{ Auth::user()->name }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" name="email" class="form-control" value="{{ Auth::user()->email }}" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Foto Profil</label>
+            <input type="file" name="photo" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Password Baru (Opsional)</label>
+            <input type="password" name="password" class="form-control">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+        </div>
+      </form>
     </div>
+  </div>
 </div>
 
 <!-- Modal Detail Profil -->
 <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content text-center">
-            <div class="modal-header">
-                <h5 class="modal-title" id="detailModalLabel">Detail Profil</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-            </div>
-            <div class="modal-body">
-                <img 
-                    src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : 'https://via.placeholder.com/150' }}" 
-                    alt="Foto Profil" 
-                    class="profile-img mb-3">
-                <p><strong>Nama:</strong> {{ Auth::user()->name }}</p>
-                <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
-                <p><strong>Dibuat:</strong> {{ Auth::user()->created_at->format('d M Y') }}</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-            </div>
-        </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailModalLabel">Detail Profil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="{{ Auth::user()->photo ? asset('storage/' . Auth::user()->photo) : 'https://via.placeholder.com/150' }}" 
+             class="profile-img mb-3">
+        <p><strong>Nama:</strong> {{ Auth::user()->name }}</p>
+        <p><strong>Email:</strong> {{ Auth::user()->email }}</p>
+        <p><strong>Login terakhir:</strong> {{ now()->format('d M Y H:i') }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Bootstrap JS -->

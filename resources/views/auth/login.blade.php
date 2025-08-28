@@ -2,9 +2,9 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #537aa0ff;
@@ -12,36 +12,47 @@
             min-height: 100vh;
         }
 
+        /* Sidebar Modern */
         .sidebar {
             height: 100vh;
-            background-color: #fff;
+            background-color: #f7f9fc;
             border-right: 1px solid #dee2e6;
-            padding: 20px;
+            padding: 30px 20px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 250px;
+            width: 220px;
             z-index: 1000;
-            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
         }
 
         .sidebar a {
-            display: block;
+            display: flex;
+            align-items: center;
             padding: 10px 15px;
             color: #2f80ed;
             font-weight: 500;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+        }
+
+        .sidebar a span {
+            font-size: 18px;
+            margin-right: 10px;
         }
 
         .sidebar a:hover,
         .sidebar a.active {
             background-color: #2f80ed;
             color: #fff;
+            font-weight: 600;
         }
 
         .main-content {
-            margin-left: 250px;
+            margin-left: 220px;
             padding: 20px;
         }
 
@@ -88,14 +99,8 @@
         }
 
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 10px;
-            }
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 10px; }
 
             .mobile-nav {
                 display: flex;
@@ -113,10 +118,18 @@
                 color: #2f80ed;
                 text-decoration: none;
                 font-weight: 500;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 14px;
+            }
+
+            .mobile-nav a span {
+                font-size: 18px;
             }
 
             .mobile-nav a.active {
-                font-weight: bold;
+                font-weight: 600;
                 text-decoration: underline;
             }
         }
@@ -125,12 +138,16 @@
 <body>
 
 <!-- Sidebar -->
-<div class="sidebar d-none d-md-block">
-    <h5 class="mb-4">Menu</h5>
+<div class="sidebar d-none d-md-flex flex-column">
+    <h4 class="mb-4" style="color:#2f80ed;">Menu</h4>
+    <br>
+    <a href="{{ url('/') }}">
+        <span>🏠</span> Welcome
+    </a>
     <hr>
-    <a href="{{ url('/') }}">Welcome</a>
-    
-    <a href="{{ route('data.kategori') }}">Lihat Data</a>
+    <a href="{{ route('data.kategori') }}">
+        <span>📂</span> Lihat data
+    </a>
 </div>
 
 <!-- Main Content -->
@@ -176,16 +193,14 @@
 
 <!-- Mobile bottom nav -->
 <div class="mobile-nav d-md-none">
-    <a href="{{ url('/') }}">Welcome</a>
-    <a href="{{ route('data.kategori') }}">Data</a>
-    <a href="{{ route('logout') }}"
-       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Logout</a>
+    <a href="{{ url('/') }}">
+        <span>🏠</span> Welcome
+    </a>
+    <a href="{{ route('data.kategori') }}">
+        <span>📂</span> Data
+    </a>
 </div>
 
-<form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-    @csrf
-</form>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

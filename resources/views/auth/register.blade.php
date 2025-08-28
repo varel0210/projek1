@@ -2,45 +2,57 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #537aa0ff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
         }
 
+        /* Sidebar Modern */
         .sidebar {
             height: 100vh;
-            background-color: #fff;
+            background-color: #f7f9fc;
             border-right: 1px solid #dee2e6;
-            padding: 20px;
+            padding: 30px 20px;
             position: fixed;
             top: 0;
             left: 0;
-            width: 250px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
             z-index: 1000;
-            overflow-y: auto;
         }
 
         .sidebar a {
-            display: block;
+            display: flex;
+            align-items: center;
             padding: 10px 15px;
             color: #2f80ed;
             font-weight: 500;
             text-decoration: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a span {
+            font-size: 18px;
+            margin-right: 10px;
         }
 
         .sidebar a:hover,
         .sidebar a.active {
             background-color: #2f80ed;
             color: #fff;
+            font-weight: 600;
         }
 
         .main-content {
-            margin-left: 250px;
+            margin-left: 220px;
             padding: 20px;
         }
 
@@ -50,6 +62,8 @@
             padding: 30px;
             background-color: #ffffffee;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin: 60px auto;
         }
 
         h2 {
@@ -57,9 +71,7 @@
             color: #2f80ed;
         }
 
-        .form-label {
-            font-weight: 500;
-        }
+        .form-label { font-weight: 500; }
 
         .btn-success {
             background-color: #27ae60;
@@ -76,30 +88,12 @@
             color: #fff;
         }
 
-        .alert {
-            border-radius: 10px;
-        }
-
-        input.form-control {
-            border-radius: 10px;
-        }
-
-        .register-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+        .alert { border-radius: 10px; }
+        input.form-control { border-radius: 10px; }
 
         @media (max-width: 768px) {
-            .sidebar {
-                display: none;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 10px;
-            }
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 10px; }
 
             .mobile-nav {
                 display: flex;
@@ -117,86 +111,94 @@
                 color: #2f80ed;
                 text-decoration: none;
                 font-weight: 500;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-size: 14px;
             }
 
-            .mobile-nav a.active {
-                font-weight: bold;
-                text-decoration: underline;
-            }
+            .mobile-nav a span { font-size: 18px; }
+            .mobile-nav a.active { font-weight: 600; text-decoration: underline; }
         }
     </style>
 </head>
 <body>
+
 <!-- Sidebar -->
-<div class="sidebar d-none d-md-block">
-    <h5 class="mb-4">Menu</h5>
+<div class="sidebar d-none d-md-flex flex-column">
+    <h4 class="mb-4" style="color:#2f80ed;">Menu</h4>
+    <br>
+    <a href="{{ url('/') }}">
+        <span>🏠</span> Welcome
+    </a>
     <hr>
-    <a href="{{ url('/') }}">Welcome</a>
-    <a href="{{ route('data.kategori') }}">Lihat Data</a><br>
+    <a href="{{ route('data.kategori') }}">
+        <span>📂</span> Lihat data
+    </a>
 </div>
 
 <!-- Main Content -->
 <div class="main-content">
-    <div class="register-container">
-        <div class="card" style="width: 100%; max-width: 500px;">
-            <h2 class="mb-4 text-center">Registrasi</h2>
+    <div class="card">
+        <h2 class="mb-4 text-center">Registrasi</h2>
 
-            {{-- Tampilkan error validasi --}}
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-            {{-- Form --}}
-            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
-                @csrf
+        <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+            @csrf
 
-                <div class="mb-3">
-                    <label class="form-label">Nama</label>
-                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Nama</label>
+                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Konfirmasi Password</label>
-                    <input type="password" name="password_confirmation" class="form-control" required>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" class="form-control" required>
+            </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Foto Diri</label>
-                    <input type="file" name="photo" class="form-control" accept="image/*">
-                    <small class="text-muted">Format: jpg, jpeg, png. Max: 2MB</small>
-                </div>
+            <div class="mb-3">
+                <label class="form-label">Foto Diri</label>
+                <input type="file" name="photo" class="form-control" accept="image/*">
+                <small class="text-muted">Format: jpg, jpeg, png. Max: 2MB</small>
+            </div>
 
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-success">Daftar</button>
-                    <a href="{{ route('login') }}" class="btn btn-outline-primary">Kembali ke Login</a>
-                </div>
-            </form>
-        </div>
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-success">Daftar</button>
+                <a href="{{ route('login') }}" class="btn btn-outline-primary">Kembali ke Login</a>
+            </div>
+        </form>
     </div>
 </div>
 
 <!-- Mobile bottom nav -->
 <div class="mobile-nav d-md-none">
-    <a href="{{ url('/') }}">Welcome</a>
-    <a href="{{ route('data.kategori') }}">Lihat Data</a>
+    <a href="{{ url('/') }}">
+        <span>🏠</span> Welcome
+    </a>
+    <a href="{{ route('data.kategori') }}">
+        <span>📂</span> Data
+    </a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

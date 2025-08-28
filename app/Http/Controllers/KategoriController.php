@@ -4,29 +4,29 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kategori;
-use App\Models\Konten;
 
 class KategoriController extends Controller
 {
+    // Tampilkan form + daftar kategori
     public function index()
     {
         $kategori = Kategori::all();
-         $konten = Konten::with('kategori')->latest()->get();
-    return view('kategori', compact('kategori', 'konten'));
         return view('kategori', compact('kategori'));
     }
 
+    // Simpan kategori baru
     public function store(Request $request)
     {
+        // Validasi input
         $request->validate([
-            'nama' => 'required|string|max:255'
+            'nama' => 'required|string|max:100|unique:kategoris,nama',
         ]);
 
+        // Simpan ke database
         Kategori::create([
-            'nama' => $request->nama
+            'nama' => $request->nama,
         ]);
 
-        return redirect()->route('kategori')->with('success', 'Kategori berhasil ditambahkan!');
+        return redirect()->back()->with('success', 'Kategori berhasil ditambahkan!');
     }
 }
-

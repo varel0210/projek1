@@ -7,6 +7,9 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\KontenController;
 use App\Http\Controllers\DataKategoriController;
+use App\Http\Controllers\DataKontenController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\UserController;
 
 // ==============================
 // Landing Page
@@ -18,12 +21,8 @@ Route::get('/', function () {
 // ==============================
 // Auth Routes
 // ==============================
-
-// Login
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
-
-// Register
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
@@ -34,59 +33,69 @@ Route::post('/logout', function () {
 })->name('logout');
 
 // ==============================
-// Dashboard (Hanya setelah login)
+// Dashboard
 // ==============================
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware('auth')->name('dashboard');
 
 // ==============================
-// Profile (Update hanya jika login)
+// Profile
 // ==============================
-Route::put('/profile', [ProfileController::class, 'update'])
+Route::put('/profile/update', [ProfileController::class, 'update'])
     ->middleware('auth')
     ->name('profile.update');
 
 // ==============================
-// Kategori & Konten
+// Admin & User Dashboard
 // ==============================
+Route::middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/admin/users', [AdminController::class, 'users'])->name('admin.users');
+});
 
-// Tampilkan halaman kategori & konten
-Route::get('/kategori', [KategoriController::class, 'index'])
-    ->middleware('auth')
-    ->name('kategori');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/dashboard', function () {
+        return view('dashboard'); // ✅ diganti jadi dashboard.blade.php
+    })->name('user.dashboard');
+});
 
-// Simpan kategori baru
-Route::post('/kategori', [KategoriController::class, 'store'])
-    ->middleware('auth')
-    ->name('kategori.store');
+// ==============================
+// Resource Routes
+// ==============================
+Route::resource('users', UserController::class);
+Route::resource('kategori', KategoriController::class);
+Route::resource('konten', KontenController::class);
 
-// Simpan konten baru
-Route::post('/konten', [KontenController::class, 'store'])
-    ->middleware('auth')
-    ->name('konten.store');
-
-// Tampilkan data kategori (misal untuk admin view)
-
-
+// ==============================
+// Data Kategori & Data Konten
+// ==============================
 Route::get('/data-kategori', [DataKategoriController::class, 'index'])->name('data.kategori');
+Route::get('/data-konten', [DataKontenController::class, 'index'])->name('data.konten');
+Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
+Route::get('/data-konten', [DataKontenController::class, 'index'])->name('data.konten');
 
 
-// ==============================
-// Konten Edit, Update, Delete
-// ==============================
+// Route untuk kategori
+Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
+Route::post('/kategori/store', [KategoriController::class, 'store'])->name('kategori.store');
 
-// Tampilkan form edit konten
-Route::get('/konten/{id}/edit', [KontenController::class, 'edit'])
-    ->middleware('auth')
-    ->name('konten.edit');
 
-// Update konten
-Route::put('/konten/{id}', [KontenController::class, 'update'])
-    ->middleware('auth')
-    ->name('konten.update');
+Route::get('/konten', [KontenController::class, 'index'])->name('konten.index');
+Route::get('/konten/{id}', [KontenController::class, 'show'])->name('konten.show');
+Route::get('/konten/{id}/edit', [KontenController::class, 'edit'])->name('konten.edit');
+Route::put('/konten/{id}', [KontenController::class, 'update'])->name('konten.update');
+Route::delete('/konten/{id}', [KontenController::class, 'destroy'])->name('konten.destroy');
 
-// Hapus konten
-Route::delete('/konten/{id}', [KontenController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('konten.destroy');
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+    Route::get('data-konten', [App\Http\Controllers\Admin\KontenController::class, 'index'])->name('data-konten');
+});
+
+
+Route::post('/konten/{konten}/toggle-publish', [KontenController::class, 'togglePublish'])->name('konten.toggle-publish');
+Route::get('/konten', [KontenController::class, 'index'])->name('konten.index');
+Route::get('/konten/create', [KontenController::class, 'create'])->name('konten.create');
+Route::post('/konten', [KontenController::class, 'store'])->name('konten.store');
+
+Route::resource('konten', KontenController::class);
+Route::resource('kategoris', KategoriController::class);
