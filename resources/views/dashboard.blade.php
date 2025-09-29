@@ -76,6 +76,11 @@
 </head>
 <body>
 
+@php
+    use Illuminate\Support\Str;
+    $role = Auth::user()->role ?? '';
+@endphp
+
 <!-- Top Navbar -->
 <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container-fluid">
@@ -87,14 +92,32 @@
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">Home</a>
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" 
+                       href="{{ route('dashboard') }}">
+                        Home
+                    </a>
                 </li>
+
+                {{-- hanya tampil jika user punya izin kategori --}}
+                @if(Str::contains($role, 'kategori'))
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('kategori') ? 'active' : '' }}" href="{{ route('kategori') }}">Kategori</a>
+                    <a class="nav-link {{ request()->routeIs('kategori') ? 'active' : '' }}" 
+                       href="{{ route('kategori') }}">
+                        Kategori
+                    </a>
                 </li>
+                @endif
+
+                {{-- hanya tampil jika user punya izin konten --}}
+                @if(Str::contains($role, 'konten'))
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('konten.index') ? 'active' : '' }}" href="{{ route('konten.index') }}">Data Konten</a>
+                    <a class="nav-link {{ request()->routeIs('konten.index') ? 'active' : '' }}" 
+                       href="{{ route('konten.index') }}">
+                        Data Konten
+                    </a>
                 </li>
+                @endif
+
                 <li class="nav-item">
                     <a class="nav-link text-danger" href="{{ route('logout') }}" 
                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">

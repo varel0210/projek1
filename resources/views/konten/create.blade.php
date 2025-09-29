@@ -53,7 +53,7 @@
 <!-- Modal Tambah Kategoris -->
 <div class="modal fade" id="modalKategori" tabindex="-1">
   <div class="modal-dialog">
-    <form action="{{ route('kategoris.store') }}" method="POST" class="modal-content">
+    <form action="{{ route('kategori.store') }}" method="POST" class="modal-content">
         @csrf
         <div class="modal-header">
             <h5 class="modal-title">Tambah Kategoris</h5>

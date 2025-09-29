@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Konten;
 use App\Models\Kategori;
 
+
+
 class KontenController extends Controller
 {
     // ===============================
@@ -149,4 +151,41 @@ class KontenController extends Controller
     $kategori = \App\Models\Kategori::orderBy('nama')->get(); // kalau perlu pilih kategori
     return view('konten.create', compact('kategori'));
 }
+
+public function exportCsv()
+{
+    $fileName = 'konten.csv';
+    $konten = \App\Models\Konten::with('kategori', 'user')->get();
+
+    $headers = [
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=$fileName",
+        "Pragma"              => "no-cache",
+        "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+        "Expires"             => "0"
+    ];
+
+    $columns = ['Judul', 'Isi', 'Kategori', 'User', 'Status', 'Tanggal'];
+
+    $callback = function() use($konten, $columns) {
+        $file = fopen('php://output', 'w');
+        fputcsv($file, $columns);
+
+        foreach ($konten as $k) {
+            fputcsv($file, [
+                $k->judul,
+                $k->isi,
+                $k->kategori->nama ?? '-',
+                $k->user->name ?? '-',
+                $k->is_published ? 'Published' : 'Draft',
+                $k->created_at->format('d-m-Y')
+            ]);
+        }
+
+        fclose($file);
+    };
+
+    return response()->stream($callback, 200, $headers);
+}
+
 }

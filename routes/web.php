@@ -56,14 +56,14 @@ Route::middleware(['auth', 'is_admin'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/dashboard', function () {
-        return view('dashboard'); // ✅ diganti jadi dashboard.blade.php
+        return view('dashboard');
     })->name('user.dashboard');
 });
 
 // ==============================
 // Resource Routes
 // ==============================
-Route::resource('users', UserController::class);
+Route::resource('users', UserController::class)->except(['show']);
 Route::resource('kategori', KategoriController::class);
 Route::resource('konten', KontenController::class);
 
@@ -72,30 +72,31 @@ Route::resource('konten', KontenController::class);
 // ==============================
 Route::get('/data-kategori', [DataKategoriController::class, 'index'])->name('data.kategori');
 Route::get('/data-konten', [DataKontenController::class, 'index'])->name('data.konten');
-Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
-Route::get('/data-konten', [DataKontenController::class, 'index'])->name('data.konten');
 
-
-// Route untuk kategori
-Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
+// ==============================
+// Kategori (extra custom routes)
+// ==============================
 Route::post('/kategori/store', [KategoriController::class, 'store'])->name('kategori.store');
 
+// ==============================
+// Konten (extra custom routes)
+// ==============================
+Route::post('/konten/{konten}/toggle-publish', [KontenController::class, 'togglePublish'])->name('konten.toggle-publish');
+Route::get('/konten/export', [KontenController::class, 'export'])->name('konten.export');
 
-Route::get('/konten', [KontenController::class, 'index'])->name('konten.index');
-Route::get('/konten/{id}', [KontenController::class, 'show'])->name('konten.show');
-Route::get('/konten/{id}/edit', [KontenController::class, 'edit'])->name('konten.edit');
-Route::put('/konten/{id}', [KontenController::class, 'update'])->name('konten.update');
-Route::delete('/konten/{id}', [KontenController::class, 'destroy'])->name('konten.destroy');
-
+// ==============================
+// Admin prefix
+// ==============================
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    Route::get('data-konten', [App\Http\Controllers\Admin\KontenController::class, 'index'])->name('data-konten');
+    Route::get('/data-konten', [App\Http\Controllers\Admin\KontenController::class, 'index'])->name('data-konten');
+    Route::get('/konten/export', [KontenController::class, 'exportCsv'])->name('konten.export');
 });
 
+// ==============================
+// User Permission & Export
+// ==============================
+Route::put('/users/{id}/permission', [UserController::class, 'updatePermission'])->name('users.updatePermission');
+Route::get('/users/export', [UserController::class, 'export'])->name('users.export');
 
-Route::post('/konten/{konten}/toggle-publish', [KontenController::class, 'togglePublish'])->name('konten.toggle-publish');
-Route::get('/konten', [KontenController::class, 'index'])->name('konten.index');
-Route::get('/konten/create', [KontenController::class, 'create'])->name('konten.create');
-Route::post('/konten', [KontenController::class, 'store'])->name('konten.store');
+Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
 
-Route::resource('konten', KontenController::class);
-Route::resource('kategoris', KategoriController::class);
